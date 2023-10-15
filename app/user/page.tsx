@@ -2,6 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image"; // Import the Image component
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { useSession, getSession } from "next-auth/react"
+import { useRouter } from 'next/navigation'
+
+
 
 interface User {
   avatar: string | any;
@@ -18,6 +24,20 @@ export default function UsersList() {
   const [users, setUsers] = useState<User[]>([]);
   const [showEmails, setShowEmails] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter()
+
+
+  const { data: session, status } = useSession()
+
+  if (status === "loading") {
+    return <p>Loading...</p>
+  }
+
+  if (status === "unauthenticated") {
+    router.push('/')
+
+    return <p>Access Denied</p>
+  }
 
   const fetchAllUsers = async () => {
     try {
