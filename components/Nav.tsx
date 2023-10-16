@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -23,7 +22,6 @@ const Nav: React.FC = () => {
     (async () => {
       const res = await getProviders();
       setProviders(res);
-      console.log("res", res);
     })();
   }, []);
 
@@ -39,7 +37,7 @@ const Nav: React.FC = () => {
         />
         <p className="logo_text">ZURICH</p>
       </Link>
-      
+
       {/* Desktop Navigation */}
       <div className="sm:flex hidden">
         {session?.user ? (
@@ -107,13 +105,7 @@ const Nav: React.FC = () => {
                 >
                   My Profile
                 </Link>
-                {/* <Link
-                  href="/create-prompt"
-                  className="dropdown_link"
-                  onClick={() => setToggleDropdown(false)}
-                >
-                  Create Prompt
-                </Link> */}
+
                 <button
                   type="button"
                   onClick={() => {

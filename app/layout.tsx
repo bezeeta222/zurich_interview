@@ -1,3 +1,4 @@
+import ReduxProvider from "@/store/ReduxProvider";
 import React, { ReactNode } from "react";
 
 import "../styles/globals.css";
@@ -9,21 +10,26 @@ interface RootLayoutProps {
   children: ReactNode;
 }
 
-const RootLayout: React.FC<RootLayoutProps> = ({ children }) => (
-  <html lang="en">
-    <body>
-      <Provider>
-        <div className="main">
-          <div className="gradient" />
-        </div>
-
-        <main className="app">
-          <Nav />
-          {children}
-        </main>
-      </Provider>
-    </body>
-  </html>
-);
-
-export default RootLayout;
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <ReduxProvider>
+          <Provider>
+            <div className="main">
+              <div className="gradient" />
+            </div>
+            <main className="app">
+              <Nav />
+              {children}
+            </main>
+          </Provider>
+        </ReduxProvider>
+      </body>
+    </html>
+  );
+}
