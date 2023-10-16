@@ -1,30 +1,47 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image"; // Import the Image component
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import {
+  setUsers,
+  setCurrentPage,
+  toggleShowEmail,
+} from "../../store/reducer/userListSlice";
+import { RootState } from "../../store";
+import { Grid, IconButton } from "@mui/material";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import { setSession, clearSession } from "../../store/reducer/session";
+import { redirect } from "next/navigation";
+import CircularProgress from "@mui/material/CircularProgress";
 
-interface User {
-  avatar: string | any;
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-}
+const perPage = 4;
 
-const apiUrl = "/api/user";
-const perPage = 4; // Number of users to display per page
+const UsersList: React.FC = () => {
+  const users = useSelector((state: RootState) => state.userList.users);
+  const status = useSelector((state: RootState) => state.userSession); // Access the session status from the Redux store
 
-export default function UsersList() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [showEmails, setShowEmails] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const currentPage = useSelector(
+    (state: RootState) => state.userList.currentPage
+  );
+  const dispatch = useDispatch();
 
   const fetchAllUsers = async () => {
     try {
-      const res = await fetch(apiUrl);
+      const res = await fetch("/api/user");
       if (res.ok) {
         const data = await res.json();
-        setUsers(data.data);
+        const filteredUsers = data.data.filter(
+          (user: any) =>
+            user.first_name.startsWith("G") || user.last_name.startsWith("W")
+        );
+        dispatch(setUsers(filteredUsers));
       } else {
         console.error("Failed to fetch user data.");
       }
@@ -41,48 +58,90 @@ export default function UsersList() {
   const endIndex = startIndex + perPage;
   const usersToDisplay = users.slice(startIndex, endIndex);
 
+  const handleToggleEmails = (id: number) => {
+    dispatch(toggleShowEmail({ userId: id }));
+  };
+
+  if (status === "loading") {
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      style={{ minHeight: "100vh" }}
+    >
+      <Grid item>
+        <CircularProgress />
+      </Grid>
+    </Grid>;
+  }
+
+  if (status === "unauthenticated" || status === undefined || status === null) {
+    // Redirect unauthenticated users and clear the session
+    dispatch(clearSession());
+    redirect("/");
+    return <p>Access Denied</p>;
+  }
+
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
-        {usersToDisplay.map((user) => (
-          <div
-            key={user.id}
-            className="max-w-sm rounded overflow-hidden shadow-lg"
-          >
-            <Image
-              src={user.avatar}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {usersToDisplay.map((user: any) => (
+          <Card key={user.id} sx={{ maxWidth: 345 }}>
+            <CardMedia
+              component="img"
+              height="140"
+              image={user.avatar}
               alt={`${user.first_name} ${user.last_name}`}
-              width={200}
-              height={200}
             />
-            <div className="px-6 py-4">
-              <div className="font-bold text-xl mb-2">
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
                 {user.first_name} {user.last_name}
-              </div>
-              <p className="text-gray-700">
-                {showEmails ? user.email : "Email Masked"}
-              </p>
-            </div>
-          </div>
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {user.showEmail ? user.email : "Email is hidden"}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Grid container justifyContent="center">
+                <IconButton onClick={() => handleToggleEmails(user.id)}>
+                  {user.showEmail ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                </IconButton>
+              </Grid>
+            </CardActions>
+          </Card>
         ))}
       </div>
 
-      <div className="flex justify-center mt-10">
-        <button
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l "
-          onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Prev
-        </button>
-        <button
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={endIndex >= users.length}
-        >
-          Next
-        </button>
-      </div>
+      <Grid container spacing={2} justifyContent="center" sx={{ mt: 10 }}>
+        <Grid item>
+          <Button
+            variant="contained"
+            color="inherit"
+            onClick={() => dispatch(setCurrentPage(currentPage - 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            color="inherit"
+            onClick={() => dispatch(setCurrentPage(currentPage + 1))}
+            disabled={endIndex >= users.length}
+          >
+            Next
+          </Button>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} justifyContent="center" sx={{ mt: 10 }}>
+        <Typography variant="body2" align="center" color="textSecondary">
+          Default it filter first name starting with “G”, or last name starting
+          with “W”.
+        </Typography>
+      </Grid>
     </div>
   );
-}
+};
+
+export default UsersList;

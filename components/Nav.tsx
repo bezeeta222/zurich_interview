@@ -1,10 +1,11 @@
-
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { signIn, signOut, useSession, getProviders } from "next-auth/react";
+import { Button } from "@mui/material";
+import GoogleIcon from "@mui/icons-material/Google"; // Import the Google icon
 
 interface Provider {
   id: string;
@@ -23,7 +24,6 @@ const Nav: React.FC = () => {
     (async () => {
       const res = await getProviders();
       setProviders(res);
-      console.log("res", res);
     })();
   }, []);
 
@@ -39,7 +39,7 @@ const Nav: React.FC = () => {
         />
         <p className="logo_text">ZURICH</p>
       </Link>
-      
+
       {/* Desktop Navigation */}
       <div className="sm:flex hidden">
         {session?.user ? (
@@ -70,16 +70,17 @@ const Nav: React.FC = () => {
           <>
             {providers &&
               Object.values(providers).map((provider) => (
-                <button
+                <Button
                   type="button"
                   key={provider.name}
                   onClick={() => {
                     signIn(provider.id);
                   }}
                   className="black_btn"
+                  startIcon={provider.name === "Google" ? <GoogleIcon /> : null} // Add the Google icon if the provider is 'Google'
                 >
-                  Sign in with {provider.name}
-                </button>
+                  Sign in
+                </Button>
               ))}
           </>
         )}
@@ -107,13 +108,7 @@ const Nav: React.FC = () => {
                 >
                   My Profile
                 </Link>
-                {/* <Link
-                  href="/create-prompt"
-                  className="dropdown_link"
-                  onClick={() => setToggleDropdown(false)}
-                >
-                  Create Prompt
-                </Link> */}
+
                 <button
                   type="button"
                   onClick={() => {

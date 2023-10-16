@@ -3,9 +3,7 @@ import { NextResponse } from "next/server";
 
 const apiUrl = "https://reqres.in/api/users";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
-  console.log("req", req);
-
+export async function GET(req: Request, res: Response) {
   const response = await fetch(apiUrl);
 
   const todos: any[] = await response.json();
@@ -49,4 +47,3 @@ export async function POST(request: Request) {
     });
   }
 }
-
