@@ -31,7 +31,7 @@ const userListSlice = createSlice({
     toggleShowEmail: (state, action: PayloadAction<{ userId: number }>) => {
       // Find the user by ID and toggle their showEmail property.
       const userToToggle = state.users.find(
-        (user) => user.id === action.payload.userId
+        (user) => user.id === action.payload.userId,
       );
       if (userToToggle) {
         userToToggle.showEmail = !userToToggle.showEmail;

@@ -1,4 +1,3 @@
-// UsersList.tsx
 "use client";
 
 import React, { useEffect } from "react";
@@ -18,11 +17,16 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { setSession, clearSession } from "../../store/reducer/session";
+import { redirect } from "next/navigation";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const perPage = 4;
 
 const UsersList: React.FC = () => {
   const users = useSelector((state: RootState) => state.userList.users);
+  const status = useSelector((state: RootState) => state.userSession); // Access the session status from the Redux store
+
   const currentPage = useSelector(
     (state: RootState) => state.userList.currentPage
   );
@@ -57,6 +61,26 @@ const UsersList: React.FC = () => {
   const handleToggleEmails = (id: number) => {
     dispatch(toggleShowEmail({ userId: id }));
   };
+
+  if (status === "loading") {
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      style={{ minHeight: "100vh" }}
+    >
+      <Grid item>
+        <CircularProgress />
+      </Grid>
+    </Grid>;
+  }
+
+  if (status === "unauthenticated" || status === undefined || status === null) {
+    // Redirect unauthenticated users and clear the session
+    dispatch(clearSession());
+    redirect("/");
+    return <p>Access Denied</p>;
+  }
 
   return (
     <div>

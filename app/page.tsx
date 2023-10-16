@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { setSession, clearSession } from "../store/reducer/session";
 import { RootState, AppDispatch } from "../store";
+import { Grid, CircularProgress } from "@mui/material";
 
 const Home = () => {
   const { data: session, status } = useSession(); // Get the user session
@@ -12,11 +13,23 @@ const Home = () => {
   const dispatch: AppDispatch = useDispatch();
 
   if (status === "loading") {
-    return <p>Loading...</p>;
+    dispatch(setSession(status));
+    return (
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        style={{ minHeight: "100vh" }}
+      >
+        <Grid item>
+          <CircularProgress />
+        </Grid>
+      </Grid>
+    );
   }
 
   if (status === "authenticated") {
-    dispatch(setSession(session));
+    dispatch(setSession(status));
     router.push("/user");
     return <p>Access Granted</p>;
   } else {

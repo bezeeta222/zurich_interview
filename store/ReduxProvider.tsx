@@ -9,7 +9,6 @@ type Props = {
 };
 
 const ReduxProvider: React.FC<Props> = ({ children }) => {
-
   return <Provider store={store}>{children}</Provider>;
 };
 
