@@ -23,6 +23,7 @@ const Nav: React.FC = () => {
   useEffect(() => {
     (async () => {
       const res = await getProviders();
+      console.log("res", res);
       setProviders(res);
     })();
   }, []);
