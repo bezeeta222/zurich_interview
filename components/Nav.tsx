@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 import { Button } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google"; // Import the Google icon
+import { GoogleLoginButton } from "react-social-login-buttons";
 
 interface Provider {
   id: string;
@@ -71,17 +72,20 @@ const Nav: React.FC = () => {
           <>
             {providers &&
               Object.values(providers).map((provider) => (
-                <Button
-                  type="button"
+                <GoogleLoginButton
                   key={provider.name}
                   onClick={() => {
                     signIn(provider.id);
                   }}
-                  className="black_btn"
-                  startIcon={provider.name === "Google" ? <GoogleIcon /> : null} // Add the Google icon if the provider is 'Google'
-                >
-                  Sign in
-                </Button>
+                  style={{
+                    background: "black", // Set the default background color to black
+                    color: "white", // Set the text color to white
+                    height: "40px", // Set the height to 100 pixels
+                  }}
+                  activeStyle={{
+                    background: "grey", // Set the active (pressed) background color to black
+                  }}
+                />
               ))}
           </>
         )}
