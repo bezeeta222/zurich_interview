@@ -2,6 +2,10 @@
 
 # [https://zurich-ten.vercel.app/](https://zurich-ten.vercel.app/ "https://zurich-ten.vercel.app/")
 
+##UPDATE
+- implement USER/POST -   Implement recursive API call
+-  business logic in the /api
+
 This is a web application that provides user authentication, a dynamic home screen, and data retrieval from an API. Below are the key features and components of this application.
 
 ## Table of Contents
