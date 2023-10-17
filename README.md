@@ -1,9 +1,11 @@
 ## View the Web Application Here
+
 # [https://zurich-ten.vercel.app/](https://zurich-ten.vercel.app/ "https://zurich-ten.vercel.app/")
 
 This is a web application that provides user authentication, a dynamic home screen, and data retrieval from an API. Below are the key features and components of this application.
 
 ## Table of Contents
+
 - [Login](#login)
 - [Home Screen](#home-screen)
 - [API Integration](#api-integration)

@@ -22,7 +22,7 @@ export async function POST(request: Request) {
         {
           headers: { "Content-Type": "application/json" },
           status: 400,
-        }
+        },
       );
     }
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         {
           headers: { "Content-Type": "application/json" },
           status: 500, // You can choose an appropriate status code for server errors
-        }
+        },
       );
     }
 

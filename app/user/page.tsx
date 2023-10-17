@@ -11,6 +11,7 @@ import {
   selectCurrentPage,
   setTotalPage,
 } from "../../store/reducer/userListSlice";
+import { clearSession } from "../../store/reducer/session";
 import { RootState } from "../../store";
 import {
   Grid,
@@ -25,16 +26,18 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { redirect } from "next/navigation";
 
 const UsersList: React.FC = () => {
+  const dispatch = useDispatch();
   const users = useSelector(selectUsers);
   const currentPage = useSelector(selectCurrentPage);
   const perPages = useSelector((state: RootState) => state.userList.per_page);
   const isLoading = useSelector((state: RootState) => state.userList.isLoading);
+  const status = useSelector((state: RootState) => state.userSession); // Access the session status from the Redux store
   const total_pages = useSelector(
-    (state: RootState) => state.userList.total_pages
+    (state: RootState) => state.userList.total_pages,
   );
-  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchAllUsers(currentPage);
@@ -81,6 +84,25 @@ const UsersList: React.FC = () => {
   const onNext = () => {
     dispatch(setCurrentPage(currentPage + 1));
   };
+
+  if (status === "loading") {
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      style={{ minHeight: "100vh" }}
+    >
+      <Grid item>
+        <CircularProgress />
+      </Grid>
+    </Grid>;
+  }
+
+  if (status === "unauthenticated" || status === undefined || status === null) {
+    dispatch(clearSession());
+    redirect("/");
+    return <p>Access Denied</p>;
+  }
 
   if (isLoading) {
     return (
@@ -152,8 +174,8 @@ const UsersList: React.FC = () => {
       </Grid>
       <Grid container spacing={2} justifyContent="center" sx={{ mt: 10 }}>
         <Typography variant="body2" align="center" color="textSecondary">
-          By Default it filter first name starting with “G”, or last name starting
-          with “W”.
+          By Default it filter first name starting with “G”, or last name
+          starting with “W”.
         </Typography>
       </Grid>
     </div>
