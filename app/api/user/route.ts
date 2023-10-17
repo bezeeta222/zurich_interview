@@ -14,24 +14,9 @@ export async function GET(req: Request, res: Response) {
 export async function POST(request: Request) {
   try {
     const requestData = await request.json();
-
-    // You can access the data from the request body like this:
     const { page, per_page } = requestData;
 
-    if (page !== undefined && per_page !== undefined) {
-      // Assuming you want to construct the URL with these parameters
-      const apiUrlWithParams = `https://reqres.in/api/users?page=${page}&per_page=${per_page}`;
-
-      // Fetch data from the constructed URL
-      const response = await fetch(apiUrlWithParams);
-      const data = await response.json();
-
-      // Return the fetched data as a JSON response
-      return new Response(JSON.stringify(data), {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      });
-    } else {
+    if (page === undefined || per_page === undefined) {
       return new Response(
         JSON.stringify({ error: "page and per_page parameters are required" }),
         {
@@ -40,10 +25,30 @@ export async function POST(request: Request) {
         }
       );
     }
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "Invalid request data" }), {
+
+    const apiUrlWithParams = `${apiUrl}?page=${page}&per_page=${per_page}`;
+    const response = await fetch(apiUrlWithParams);
+
+    if (!response.ok) {
+      return new Response(
+        JSON.stringify({ error: "Failed to fetch data from the external API" }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 500, // You can choose an appropriate status code for server errors
+        }
+      );
+    }
+
+    const data = await response.json();
+
+    return new Response(JSON.stringify(data), {
       headers: { "Content-Type": "application/json" },
-      status: 400,
+      status: 200,
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      headers: { "Content-Type": "application/json" },
+      status: 500, // Internal Server Error
     });
   }
 }
